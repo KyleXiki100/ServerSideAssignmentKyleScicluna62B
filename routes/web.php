@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CollegeController;
 use App\Http\Controllers\StudentController;
-
+use App\Http\Controllers\HomeController;
 
 Route::resource('colleges', CollegeController::class);
 Route::resource('students', StudentController::class);
@@ -11,6 +11,4 @@ Route::resource('students', StudentController::class);
 
 
 
-Route::get('/', function () {
-    return view('colleges.index');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');

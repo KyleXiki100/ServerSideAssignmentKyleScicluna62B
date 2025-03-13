@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use App\Models\Student;
 use App\Models\College;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+
 
 class StudentController extends Controller
 {
@@ -42,17 +42,42 @@ class StudentController extends Controller
             ->with('Success','Student Deleted.');
     }
 
-    public function edit($id){
-        $student = Student::findOrFail($id);
-        return view('students.edit',compact('students'));
+    public function edit($id)
+{
+    $student = Student::findOrFail($id);
+    
+    $student->dob = \Carbon\Carbon::parse($student->dob)->format('d/m/Y');
+    $colleges = College::all();
+    return view('students.edit', compact('student', 'colleges'));
+}
+
        
+    
+
+    public function show($id){
+        $student = Student::findOrFail($id);
+        $college = $student->college;
+    
+        return view('students.show', compact('student','college'));
     }
+    
 
     public function update(Request $request, $id){
         $student = Student::findOrFail($id);
+        $request->validate([
+            'name'       => 'required',
+            'email'      => 'required|email|unique:students,email,'.$id,
+            'phone'      => 'required|digits:8',
+            'dob'        => 'required|date_format:d/m/Y',
+            'college_id' => 'required|exists:colleges,id',
+        ]);
 
         $student->name = $request->name;
-    $student->email = $request->email;
+        $student->email = $request->email;
+        $student->phone = $request->phone;
+        $student->dob = Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d');
+        $student->college_id = $request->college_id;
+
     $student->save();
 
     return redirect()
@@ -72,7 +97,7 @@ public function store(Request $request){
     $request->validate([
         'name'  => 'required',
         'email' => 'required|email|unique:students,email',
-        'phone' => 'required',
+        'phone' => 'required|digits:8',
         'dob'   => 'required|date_format:d/m/Y', 
         'college_id' => 'required|exists:colleges,id',
     ]);
@@ -83,6 +108,8 @@ public function store(Request $request){
     $student->email = $request->email;
     $student->phone = $request->phone;
     $student->dob = Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d');
+
+   
     $student->college_id = $request->college_id;
    
     $student->save();

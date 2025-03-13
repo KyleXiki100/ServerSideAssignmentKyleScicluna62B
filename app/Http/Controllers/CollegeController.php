@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
 
 use App\Models\College;
 use App\Models\Student;
@@ -26,19 +27,37 @@ class CollegeController extends Controller
     public function edit($id){
         $college = College::findOrFail($id);
         return view('colleges.edit',compact('college'));
+
+        return redirect()
+        ->route('colleges.edit', $id)
+        ->with('error', 'Failed to update college.');
        
     }
 
     public function update(Request $request, $id){
+        $request->validate([
+            'name' => 'required|unique:colleges,name',
+            'address' => 'required',
+        ],[
+            'name.unique' => 'College name must be unique!'
+        
+        ]);
+
         $college = College::findOrFail($id);
 
         $college->name = $request->name;
-    $college->address = $request->address;
-    $college->save();
+        $college->address = $request->address;
+        $college->save();
 
     return redirect()
         ->route('colleges.index')
         ->with('success', 'College updated successfully!');
+}
+
+public function show($id){
+    $college = College::findOrFail($id);
+
+    return view('colleges.show', compact('college'));
 }
 
 
@@ -48,6 +67,14 @@ public function create(){
 }
 
 public function store(Request $request){
+    $request->validate([
+        'name' => 'required|unique:colleges,name',
+        'address' => 'required',
+    ],[
+        'name.unique' => 'College name must be unique!'
+    
+    ]);
+
     $college = new College();
     $college ->name = $request->name;
     $college->address = $request->address;
@@ -58,6 +85,8 @@ public function store(Request $request){
     -> with('success','College created');
 }
    }
+
+
 
    
 

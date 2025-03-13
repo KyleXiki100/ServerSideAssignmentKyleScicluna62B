@@ -4,8 +4,12 @@
 
 @section('content')
     <h1>Colleges</h1>
-    <a href="{{ route('colleges.create') }}" class="btn btn-primary mb-3">Add New College</a>
+
     
+    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#createCollegeModal">
+        Add New College
+    </button>
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -35,4 +39,7 @@
             @endforeach
         </tbody>
     </table>
+
+  
+    @include('colleges.partials.create-modal')
 @endsection
