@@ -92,8 +92,9 @@ public function create(){
     return view('students.create',compact('colleges'));
 }
 
-public function store(Request $request){
-
+public function store(Request $request)
+{
+    // Validate input
     $request->validate([
         'name'  => 'required',
         'email' => 'required|email|unique:students,email',
@@ -102,21 +103,21 @@ public function store(Request $request){
         'college_id' => 'required|exists:colleges,id',
     ]);
 
+    try {
+        // Convert date format before inserting into the database
+        $student = new Student();
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->phone = $request->phone;
+        $student->dob = Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d');
+        $student->college_id = $request->college_id;
+        
+        $student->save();
 
-    $student = new Student();
-    $student ->name = $request->name;
-    $student->email = $request->email;
-    $student->phone = $request->phone;
-    $student->dob = Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d');
-
-   
-    $student->college_id = $request->college_id;
-   
-    $student->save();
-    
-    return redirect()
-    -> route('students.index')
-    -> with('success','student created');
+        return redirect()->route('students.index')->with('success', 'Student added successfully!');
+    } catch (\Exception $e) {
+        return redirect()->route('students.index')->with('error', 'Failed to add student. ' . $e->getMessage());
+    }
 }
     
 }
