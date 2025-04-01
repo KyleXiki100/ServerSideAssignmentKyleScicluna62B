@@ -1,92 +1,115 @@
 <?php
 
 namespace App\Http\Controllers;
-use Carbon\Carbon;
 
+use Carbon\Carbon;
 use App\Models\College;
 use App\Models\Student;
 use Illuminate\Http\Request;
 
 class CollegeController extends Controller
 {
+    // Shows a list of all colleges
     public function index()
     {
-        $colleges = College::all();
-        return view('colleges.index', compact('colleges'));
+        try {
+            $colleges = College::all();
+            return view('colleges.index', compact('colleges'));
+        } catch (\Exception $e) {
+            return redirect()->route('home')->with('error', 'Failed to load colleges. ' . $e->getMessage());
+        }
     }
 
-    public function destroy($id){
-        $college = College::findOrFail($id);
-        $college->delete();
+    // Deletes a college by its ID
+    public function destroy($id)
+    {
+        try {
+            $college = College::findOrFail($id);
+            $college->delete();
 
-        return redirect()
-            ->route('colleges.index')
-            ->with('Success','College Deleted.');
+            return redirect()->route('colleges.index')->with('success', 'College deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('colleges.index')->with('error', 'Failed to delete college. ' . $e->getMessage());
+        }
     }
 
-    public function edit($id){
-        $college = College::findOrFail($id);
-        return view('colleges.edit',compact('college'));
-
-        return redirect()
-        ->route('colleges.edit', $id)
-        ->with('error', 'Failed to update college.');
-       
+    // Shows the edit form for a specific college
+    public function edit($id)
+    {
+        try {
+            $college = College::findOrFail($id);
+            return view('colleges.edit', compact('college'));
+        } catch (\Exception $e) {
+            return redirect()->route('colleges.index')->with('error', 'Failed to load college for editing. ' . $e->getMessage());
+        }
     }
 
-    public function update(Request $request, $id){
+    // Updates an existing college
+    public function update(Request $request, $id)
+    {
+        // Validate user input
         $request->validate([
-            'name' => 'required|unique:colleges,name',
+            'name'    => 'required|unique:colleges,name,' . $id,
             'address' => 'required',
-        ],[
+        ], [
             'name.unique' => 'College name must be unique!'
-        
         ]);
 
-        $college = College::findOrFail($id);
+        try {
+            // Finds and updates the college
+            $college = College::findOrFail($id);
+            $college->name = $request->name;
+            $college->address = $request->address;
+            $college->save();
 
-        $college->name = $request->name;
-        $college->address = $request->address;
-        $college->save();
+            return redirect()->route('colleges.index')->with('success', 'College updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('colleges.index')->with('error', 'Failed to update college. ' . $e->getMessage());
+        }
+    }
 
-    return redirect()
-        ->route('colleges.index')
-        ->with('success', 'College updated successfully!');
+    // Shows details of a specific college
+    public function show($id)
+    {
+        try {
+            $college = College::findOrFail($id);
+            return view('colleges.show', compact('college'));
+        } catch (\Exception $e) {
+            return redirect()->route('colleges.index')->with('error', 'Failed to load college details. ' . $e->getMessage());
+        }
+    }
+
+    // Shows the form to create a new college
+    public function create()
+    {
+        try {
+            return view('colleges.create');
+        } catch (\Exception $e) {
+            return redirect()->route('colleges.index')->with('error', 'Failed to load create form. ' . $e->getMessage());
+        }
+    }
+
+    // Stores a new college in the database
+    public function store(Request $request)
+    {
+        // Validate user input
+        $request->validate([
+            'name'    => 'required|unique:colleges,name',
+            'address' => 'required',
+        ], [
+            'name.unique' => 'College name must be unique!'
+        ]);
+
+        try {
+            // Creates and saves a new college
+            $college = new College();
+            $college->name = $request->name;
+            $college->address = $request->address;
+            $college->save();
+
+            return redirect()->route('colleges.index')->with('success', 'College created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('colleges.index')->with('error', 'Failed to create college. ' . $e->getMessage());
+        }
+    }
 }
-
-public function show($id){
-    $college = College::findOrFail($id);
-
-    return view('colleges.show', compact('college'));
-}
-
-
-
-public function create(){
-    return view('colleges.create');
-}
-
-public function store(Request $request){
-    $request->validate([
-        'name' => 'required|unique:colleges,name',
-        'address' => 'required',
-    ],[
-        'name.unique' => 'College name must be unique!'
-    
-    ]);
-
-    $college = new College();
-    $college ->name = $request->name;
-    $college->address = $request->address;
-    $college->save();
-    
-    return redirect()
-    -> route('colleges.index')
-    -> with('success','College created');
-}
-   }
-
-
-
-   
-

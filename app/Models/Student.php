@@ -9,7 +9,7 @@ use App\Models\College;
 
 class Student extends Model
 {
-    //use HasFactory;
+    //uses HasFactory;
     public function college(){
         return $this->belongsTo(College::class);
     }

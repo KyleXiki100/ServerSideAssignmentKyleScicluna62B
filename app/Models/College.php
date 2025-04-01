@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class College extends Model
 {
-    //use HasFactory;
+    //uses HasFactory;
     public function students(){
         return $this->hasMany(Students::class);
     }

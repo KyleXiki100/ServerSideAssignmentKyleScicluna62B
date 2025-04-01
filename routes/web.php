@@ -10,5 +10,5 @@ Route::resource('students', StudentController::class);
 
 
 
-
+Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
 Route::get('/', [HomeController::class, 'index'])->name('home');

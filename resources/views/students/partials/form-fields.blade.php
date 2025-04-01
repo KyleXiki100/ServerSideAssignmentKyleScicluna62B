@@ -1,63 +1,96 @@
-{{-- This partial only contains the input fields, no <form> tags --}}
-<div class="form-group">
+<form action="{{ isset($student) && $student->id ? route('students.update', $student->id) : route('students.store') }}" method="POST">
+  @csrf
+  @if(isset($student) && $student->id)
+    @method('PUT')
+  @endif
+
+  <div class="form-group">
     <label for="name">Student Name</label>
     <input 
-        type="text" 
-        name="name" 
-        id="name" 
-        class="form-control" 
-        value="{{ old('name', $student->name ?? '') }}" 
-        required
+      type="text" 
+      name="name" 
+      id="name" 
+      class="form-control @error('name') is-invalid @enderror" 
+      value="{{ old('name', $student->name ?? '') }}" 
+      required
     >
-</div>
+    @error('name')
+      <div class="invalid-feedback">
+        {{ $message }}
+      </div>
+    @enderror
+  </div>
 
-<div class="form-group">
+  <div class="form-group">
     <label for="email">Email</label>
     <input 
-        type="text" 
-        name="email" 
-        id="email" 
-        class="form-control" 
-        value="{{ old('email', $student->email ?? '') }}" 
-        required
+      type="email" 
+      name="email" 
+      id="email" 
+      class="form-control @error('email') is-invalid @enderror" 
+      value="{{ old('email', $student->email ?? '') }}" 
+      required
     >
-</div>
+    @error('email')
+      <div class="invalid-feedback">
+        {{ $message }}
+      </div>
+    @enderror
+  </div>
 
-<div class="form-group">
+  <div class="form-group">
     <label for="phone">Phone (8 digits)</label>
     <input 
-        type="text" 
-        name="phone" 
-        id="phone" 
-        class="form-control" 
-        value="{{ old('phone', $student->phone ?? '') }}" 
-        required
+      type="text" 
+      name="phone" 
+      id="phone" 
+      class="form-control @error('phone') is-invalid @enderror" 
+      value="{{ old('phone', $student->phone ?? '') }}" 
+      required
     >
-</div>
+    @error('phone')
+      <div class="invalid-feedback">
+        {{ $message }}
+      </div>
+    @enderror
+  </div>
 
-<div class="form-group">
+  <div class="form-group">
     <label for="dob">Date of Birth (DD/MM/YYYY)</label>
     <input 
-        type="text" 
-        name="dob" 
-        id="dob" 
-        class="form-control" 
-        value="{{ old('dob', $student->dob ?? '') }}" 
-        required
+      type="text" 
+      name="dob" 
+      id="dob" 
+      class="form-control @error('dob') is-invalid @enderror" 
+      value="{{ old('dob', $student->dob ?? '') }}" 
+      required
     >
-</div>
+    @error('dob')
+      <div class="invalid-feedback">
+        {{ $message }}
+      </div>
+    @enderror
+  </div>
 
-<div class="form-group">
+  <div class="form-group">
     <label for="college_id">College</label>
-    <select name="college_id" id="college_id" class="form-control">
-        <option value="">-- Select a College --</option>
-        @foreach($colleges as $college)
-            <option 
-                value="{{ $college->id }}"
-                {{ old('college_id', $student->college_id ?? '') == $college->id ? 'selected' : '' }}
-            >
-                {{ $college->name }}
-            </option>
-        @endforeach
+    <select name="college_id" id="college_id" class="form-control @error('college_id') is-invalid @enderror" required>
+      <option value="">-- Select a College --</option>
+      @foreach($colleges as $college)
+        <option 
+          value="{{ $college->id }}"
+          {{ old('college_id', $student->college_id ?? '') == $college->id ? 'selected' : '' }}
+        >
+          {{ $college->name }}
+        </option>
+      @endforeach
     </select>
-</div>
+    @error('college_id')
+      <div class="invalid-feedback">
+        {{ $message }}
+      </div>
+    @enderror
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
