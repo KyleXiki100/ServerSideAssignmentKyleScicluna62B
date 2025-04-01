@@ -12,7 +12,8 @@
       id="name" 
       class="form-control @error('name') is-invalid @enderror" 
       value="{{ old('name', $student->name ?? '') }}" 
-      required
+      required pattern="[A-Za-z\s]+"
+      title="Name should only contain letters and spaces."
     >
     @error('name')
       <div class="invalid-feedback">
@@ -46,7 +47,8 @@
       id="phone" 
       class="form-control @error('phone') is-invalid @enderror" 
       value="{{ old('phone', $student->phone ?? '') }}" 
-      required
+      required pattern="\d{8}"
+      title="Phone number must be exactly 8 digits."
     >
     @error('phone')
       <div class="invalid-feedback">
@@ -63,7 +65,8 @@
       id="dob" 
       class="form-control @error('dob') is-invalid @enderror" 
       value="{{ old('dob', $student->dob ?? '') }}" 
-      required
+      required pattern="\d{2}/\d{2}/\d{4}"
+      title="Please enter date in DD/MM/YYYY format."
     >
     @error('dob')
       <div class="invalid-feedback">
@@ -91,6 +94,4 @@
       </div>
     @enderror
   </div>
-
-  <button type="submit" class="btn btn-primary">Submit</button>
 </form>
